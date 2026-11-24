@@ -147,15 +147,55 @@ pub fn router(state: Arc<Issuer>) -> Router {
 }
 
 /// Load an issuer key file (JSON, see [`pramana_core::credential::IssuerKeyFile`]).
+///
+/// On Unix, refuses key files readable by group or others (like OpenSSH does for
+/// private keys).
 pub fn load_key_file(path: &Path) -> anyhow::Result<IssuerKey> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mode = std::fs::metadata(path)?.permissions().mode();
+        anyhow::ensure!(
+            mode & 0o077 == 0,
+            "issuer key file {} has permissions {:o}; it must not be accessible by group or others (run: chmod 600 {})",
+            path.display(),
+            mode & 0o777,
+            path.display()
+        );
+    }
     let s = std::fs::read_to_string(path)?;
     let f: pramana_core::credential::IssuerKeyFile = serde_json::from_str(&s)?;
     Ok(IssuerKey::from_file(&f)?)
 }
 
-/// Write an issuer key file.
+/// Write a file containing secrets: created owner-read/write only (0600) on Unix,
+/// and tightened to 0600 if it already existed. On Windows the file inherits the
+/// ACL of its directory (by default the user's profile is private to the user).
+pub fn write_secret_file(path: &Path, contents: &str) -> std::io::Result<()> {
+    use std::io::Write;
+    let mut opts = std::fs::OpenOptions::new();
+    opts.write(true).create(true).truncate(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        opts.mode(0o600);
+    }
+    let mut f = opts.open(path)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        f.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+    }
+    f.write_all(contents.as_bytes())?;
+    f.sync_all()
+}
+
+/// Write an issuer key file (mode 0600).
 pub fn write_key_file(path: &Path, key: &IssuerKey) -> anyhow::Result<()> {
-    std::fs::write(path, serde_json::to_string_pretty(&key.to_file())? + "\n")?;
+    write_secret_file(
+        path,
+        &(serde_json::to_string_pretty(&key.to_file())? + "\n"),
+    )?;
     Ok(())
 }
 
@@ -298,6 +338,22 @@ mod tests {
         let (c2, src) = resolve_key("X", None, Some(&path)).unwrap();
         assert!(src.starts_with("key file"));
         assert_eq!(c.public_key(), c2.public_key());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn key_file_is_private_and_loose_permissions_are_refused() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = std::env::temp_dir().join(format!("pramana-perm-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("issuer.key");
+        write_key_file(&path, &IssuerKey::from_secret("X", &[3u8; 32])).unwrap();
+        let mode = std::fs::metadata(&path).unwrap().permissions().mode() & 0o777;
+        assert_eq!(mode, 0o600);
+        assert!(load_key_file(&path).is_ok());
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(load_key_file(&path).is_err());
         let _ = std::fs::remove_dir_all(dir);
     }
 

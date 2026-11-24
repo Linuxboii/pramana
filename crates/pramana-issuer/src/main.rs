@@ -113,7 +113,7 @@ async fn main() -> anyhow::Result<()> {
             let json = serde_json::to_string_pretty(&cred)? + "\n";
             match out {
                 Some(p) => {
-                    std::fs::write(&p, json)?;
+                    pramana_issuer::write_secret_file(&p, &json)?;
                     eprintln!(
                         "wrote credential to {} — keep it private: it contains your witness (D, r)",
                         p.display()
