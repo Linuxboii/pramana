@@ -1,0 +1,32 @@
+[package]
+name = "pramana-demo"
+description = "Single deployable server for the §17 demonstration: demo issuer + two verifiers + the web app."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "pramana-demo"
+path = "src/main.rs"
+
+[dependencies]
+pramana-core.workspace = true
+pramana-issuer.workspace = true
+pramana-sakshi.workspace = true
+rand_core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+hex.workspace = true
+axum.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+clap.workspace = true
+anyhow.workspace = true
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
