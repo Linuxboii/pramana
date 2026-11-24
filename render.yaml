@@ -1,0 +1,10 @@
+# Render Blueprint — New + → Blueprint → select this repository.
+services:
+  - type: web
+    name: pramana
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PRAMANA_ISSUER_KEY
+        generateValue: true   # stable random secret → stable issuer key across deploys

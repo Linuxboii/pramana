@@ -1,0 +1,21 @@
+# Fly.io — `fly launch --copy-config --no-deploy`, then
+# `fly secrets set PRAMANA_ISSUER_KEY=$(openssl rand -hex 32)` and `fly deploy`.
+app = "pramana"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "30s"
+    method = "GET"
+    path = "/api/health"
+    timeout = "5s"

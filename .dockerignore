@@ -1,0 +1,8 @@
+target
+.data
+.git
+**/node_modules
+web/dist
+web/src/wasm
+web/e2e/screenshots
+python/__pycache__

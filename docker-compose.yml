@@ -1,0 +1,17 @@
+# docker compose up --build   →   http://localhost:8080
+services:
+  pramana:
+    build: .
+    image: pramana:latest
+    ports:
+      - "8080:8080"
+    environment:
+      # Optional: pin the demo issuer key (64 hex chars or any secret ≥ 32 chars).
+      # Without it, a key is generated on first start and kept in the volume.
+      PRAMANA_ISSUER_KEY: ${PRAMANA_ISSUER_KEY:-}
+      PRAMANA_CHALLENGE_TTL: ${PRAMANA_CHALLENGE_TTL:-120}
+    volumes:
+      - pramana-data:/data
+    restart: unless-stopped
+volumes:
+  pramana-data:
