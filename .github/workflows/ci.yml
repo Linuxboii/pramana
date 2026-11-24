@@ -52,7 +52,7 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - name: Build WASM
-        run: ./scripts/build-wasm.sh
+        run: sh scripts/build-wasm.sh
       - name: Build web app
         working-directory: web
         run: |
