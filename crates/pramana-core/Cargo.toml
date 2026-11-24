@@ -1,0 +1,32 @@
+[package]
+name = "pramana-core"
+description = "Gūḍhapramāṇa: zero-knowledge age proofs from Pedersen commitments, Σ-protocols and strong Fiat–Shamir over Ristretto255."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+curve25519-dalek.workspace = true
+ed25519-dalek.workspace = true
+sha2.workspace = true
+rand_core.workspace = true
+subtle.workspace = true
+zeroize.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ciborium.workspace = true
+hex.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest = "1"
+criterion = { version = "0.5", default-features = false }
+
+[[bench]]
+name = "prove_verify"
+harness = false
+
+[[example]]
+name = "gen_vectors"

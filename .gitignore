@@ -1,0 +1,14 @@
+/target
+/.data
+**/node_modules
+/web/dist
+/web/src/wasm
+/web/e2e/screenshots
+/web/*.tsbuildinfo
+/web/node_modules/.tmp
+python/__pycache__
+*.key
+*.cred
+!test-vectors/**
+.env
+.DS_Store

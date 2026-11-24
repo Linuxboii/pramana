@@ -1,0 +1,55 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/pramana-core",
+    "crates/pramana-issuer",
+    "crates/pramana-sakshi",
+    "crates/pramana-demo",
+    "crates/pramana-wasm",
+]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+authors = ["K. Sushanth"]
+repository = "https://github.com/Linuxboii/pramana"
+
+[workspace.dependencies]
+pramana-core = { path = "crates/pramana-core" }
+pramana-issuer = { path = "crates/pramana-issuer" }
+pramana-sakshi = { path = "crates/pramana-sakshi" }
+
+curve25519-dalek = { version = "4.1", default-features = false, features = ["alloc", "precomputed-tables", "zeroize", "digest", "rand_core"] }
+ed25519-dalek = { version = "2.1", default-features = false, features = ["std", "fast", "zeroize", "rand_core"] }
+sha2 = "0.10"
+rand_core = { version = "0.6", features = ["getrandom"] }
+subtle = "2.5"
+zeroize = "1.7"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ciborium = "0.2"
+hex = "0.4"
+thiserror = "1"
+
+axum = "0.7"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "signal", "time"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "trace", "limit", "set-header", "catch-panic"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4", features = ["derive", "env"] }
+anyhow = "1"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+
+[profile.release.package.pramana-wasm]
+opt-level = "s"
+
+# Tests exercise a lot of curve arithmetic; keep them fast.
+[profile.dev.package."*"]
+opt-level = 2
+[profile.test]
+opt-level = 1
