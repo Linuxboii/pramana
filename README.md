@@ -119,7 +119,7 @@ Measured on a laptop (Windows, x86-64): prove **12 ms** native / **≈40 ms** in
 
 ## Deploying
 
-The Docker image is self-contained (≈ 100 MB, runs as non-root, built-in healthcheck). It works on any container host; ready-made configs are included for **Render** (`render.yaml`), **Fly.io** (`fly.toml`) and **Docker Compose**. Set `PRAMANA_ISSUER_KEY` (or mount `/data`) so the demo issuer key — and therefore issued credentials — survive restarts. Everything is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+The Docker image is self-contained (≈ 134 MB, runs as non-root, built-in healthcheck). It works on any container host; ready-made configs are included for **Render** (`render.yaml`), **Fly.io** (`fly.toml`) and **Docker Compose**. Set `PRAMANA_ISSUER_KEY` (or mount `/data`) so the demo issuer key — and therefore issued credentials — survive restarts. Everything is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
 ## Documentation
 
